@@ -21,6 +21,9 @@ export interface CsvStats {
   daysSinceExtraction: number | null
   dateRangeDays: number | null
   lastDateDaysAgo: number | null
+  detectedPeriod: string | null      // e.g. "Aug 2024 – Nov 2025"
+  firstDate: Date | null
+  lastDate: Date | null
 
   // Completeness — generic
   nullPctByColumn: Record<string, number>
@@ -140,14 +143,31 @@ export function parseCSVStats(csvText: string): CsvStats {
   })
   let dateRangeDays: number | null = null
   let lastDateDaysAgo: number | null = null
+  let detectedPeriod: string | null = null
+  let firstDate: Date | null = null
+  let lastDate: Date | null = null
+
   if (dateCol && columns[dateCol]) {
     const dates = columns[dateCol]
       .map(d => new Date(d))
       .filter(d => !isNaN(d.getTime()))
       .sort((a, b) => a.getTime() - b.getTime())
     if (dates.length >= 2) {
-      dateRangeDays = Math.round((dates[dates.length - 1].getTime() - dates[0].getTime()) / (1000 * 60 * 60 * 24))
-      lastDateDaysAgo = Math.round((Date.now() - dates[dates.length - 1].getTime()) / (1000 * 60 * 60 * 24))
+      firstDate = dates[0]
+      lastDate = dates[dates.length - 1]
+      dateRangeDays = Math.round((lastDate.getTime() - firstDate.getTime()) / (1000 * 60 * 60 * 24))
+      lastDateDaysAgo = Math.round((Date.now() - lastDate.getTime()) / (1000 * 60 * 60 * 24))
+
+      // Format period string — e.g. "Aug 2024 – Nov 2025"
+      const fmt = (d: Date) => d.toLocaleDateString('en-US', { month: 'short', year: 'numeric' })
+      const startFmt = fmt(firstDate)
+      const endFmt = fmt(lastDate)
+      detectedPeriod = startFmt === endFmt ? startFmt : `${startFmt} – ${endFmt}`
+    } else if (dates.length === 1) {
+      firstDate = dates[0]
+      lastDate = dates[0]
+      lastDateDaysAgo = Math.round((Date.now() - dates[0].getTime()) / (1000 * 60 * 60 * 24))
+      detectedPeriod = dates[0].toLocaleDateString('en-US', { month: 'short', year: 'numeric' })
     }
   }
 
@@ -222,6 +242,7 @@ export function parseCSVStats(csvText: string): CsvStats {
     totalRows, datasetType, headers,
     daysSinceExtraction: null,
     dateRangeDays, lastDateDaysAgo,
+    detectedPeriod, firstDate, lastDate,
     nullPctByColumn, avgNullPct, highNullColumns,
     nullCustomerIdPct, nullTransactionValuePct,
     uniqueReturnCodes, productCategoryCount, hasInconsistentCodes,
@@ -238,6 +259,7 @@ function emptyStats(): CsvStats {
   return {
     totalRows: 0, datasetType: 'generic', headers: [],
     daysSinceExtraction: null, dateRangeDays: null, lastDateDaysAgo: null,
+    detectedPeriod: null, firstDate: null, lastDate: null,
     nullPctByColumn: {}, avgNullPct: 0, highNullColumns: [],
     nullCustomerIdPct: 0, nullTransactionValuePct: 0,
     uniqueReturnCodes: 0, productCategoryCount: 0, hasInconsistentCodes: false,
@@ -439,8 +461,11 @@ function checkResponsibleUse({ meta }: CheckInput): CheckOutput {
 
 export function getDemoCSVStats(): CsvStats {
   return {
-    totalRows: 4218, datasetType: 'transaction', headers: ['transaction_id', 'customer_id', 'product_category', 'transaction_value', 'return_status', 'transaction_date'],
+    totalRows: 4218, datasetType: 'transaction',
+    headers: ['transaction_id', 'customer_id', 'product_category', 'transaction_value', 'return_status', 'transaction_date'],
     daysSinceExtraction: 3, dateRangeDays: 30, lastDateDaysAgo: 3,
+    detectedPeriod: 'Apr 2025',
+    firstDate: new Date('2025-04-01'), lastDate: new Date('2025-04-30'),
     nullPctByColumn: { customer_id: 14, transaction_value: 8 }, avgNullPct: 4, highNullColumns: ['customer_id'],
     nullCustomerIdPct: 14, nullTransactionValuePct: 8,
     uniqueReturnCodes: 5, productCategoryCount: 12, hasInconsistentCodes: true,
