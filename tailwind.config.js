@@ -1,0 +1,72 @@
+/** @type {import('tailwindcss').Config} */
+module.exports = {
+  content: ['./src/**/*.{js,ts,jsx,tsx,mdx}'],
+  theme: {
+    extend: {
+      colors: {
+        // Earth tone palette — warm terracotta and sand
+        earth: {
+          50:  '#faf6f1',
+          100: '#f4ebe0',
+          200: '#e8d4bc',
+          300: '#d9b896',
+          400: '#c8956a',
+          500: '#b8784a',
+          600: '#9e623a',
+          700: '#7f4e2f',
+          800: '#613c24',
+          900: '#452a18',
+        },
+        sand: {
+          50:  '#fdfaf5',
+          100: '#f9f2e4',
+          200: '#f2e3c8',
+          300: '#e8ceaa',
+          400: '#dab585',
+          500: '#cc9d63',
+          600: '#b3834a',
+          700: '#8f6839',
+          800: '#6b4e2b',
+          900: '#48341d',
+        },
+        sienna: {
+          50:  '#fcf0ec',
+          100: '#f8ddd4',
+          200: '#f0b8a8',
+          300: '#e5907a',
+          400: '#d4614a',
+          500: '#b84a34',
+          600: '#963929',
+          700: '#742c1f',
+          800: '#552015',
+          900: '#38150d',
+        },
+        stone: {
+          50:  '#f8f5f0',
+          100: '#ede7dc',
+          200: '#d8cdbf',
+          300: '#beae9c',
+          400: '#a08c76',
+          500: '#857259',
+          600: '#6b5b47',
+          700: '#544637',
+          800: '#3d3328',
+          900: '#28211a',
+        },
+        cream: '#fdf8f0',
+        parchment: '#f5ede0',
+      },
+      fontFamily: {
+        sans: ['var(--font-inter)', 'system-ui', 'sans-serif'],
+        mono: ['var(--font-mono)', 'monospace'],
+      },
+      borderRadius: {
+        DEFAULT: '6px',
+        md: '8px',
+        lg: '12px',
+        xl: '16px',
+      },
+    },
+  },
+  plugins: [],
+}

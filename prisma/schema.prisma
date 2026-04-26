@@ -1,0 +1,145 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  name          String?
+  passwordHash  String
+  role          String    @default("admin")
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  sessions      Session[]
+  scoreRuns     ScoreRun[]
+  govActions    GovAction[]
+  auditLogs     AuditLog[]
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  userId    String
+  token     String   @unique @default(cuid())
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model UseCase {
+  id           String   @id @default(cuid())
+  name         String
+  businessUnit String
+  outputType   String
+  intendedUse  String
+  status       String   @default("draft")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  datasets  Dataset[]
+  scoreRuns ScoreRun[]
+}
+
+model Dataset {
+  id            String   @id @default(cuid())
+  useCaseId     String
+  filename      String
+  period        String
+  sourceSystem  String
+  rowCount      Int?
+  extractedAt   DateTime?
+  lineageStatus String   @default("none")
+  reviewerName  String?
+  uploadedAt    DateTime @default(now())
+
+  useCase   UseCase    @relation(fields: [useCaseId], references: [id])
+  scoreRuns ScoreRun[]
+}
+
+model ScoreRun {
+  id           String   @id @default(cuid())
+  useCaseId    String
+  datasetId    String
+  runBy        String
+  overallScore Int
+  band         String
+  status       String   @default("draft")
+  analystNotes String?
+  aiSummary    String?
+  runAt        DateTime @default(now())
+
+  useCase      UseCase       @relation(fields: [useCaseId], references: [id])
+  dataset      Dataset       @relation(fields: [datasetId], references: [id])
+  runner       User          @relation(fields: [runBy], references: [id])
+  checkResults CheckResult[]
+  report       PublicReport?
+}
+
+model CheckResult {
+  id          String @id @default(cuid())
+  scoreRunId  String
+  checkName   String
+  weight      Float
+  score       Int
+  status      String
+  finding     String
+  notes       String?
+
+  scoreRun ScoreRun @relation(fields: [scoreRunId], references: [id], onDelete: Cascade)
+}
+
+model PublicReport {
+  id            String   @id @default(cuid())
+  scoreRunId    String   @unique
+  period        String
+  publishedAt   DateTime @default(now())
+  publishedBy   String
+  isActive      Boolean  @default(true)
+  diagnosis     String
+  guidingPolicy String
+  coherentActions String
+  permittedUse  String
+  aiSummary     String?
+
+  scoreRun ScoreRun @relation(fields: [scoreRunId], references: [id])
+}
+
+model GovAction {
+  id          String   @id @default(cuid())
+  loggedBy    String
+  action      String
+  framework   String
+  notes       String
+  nistPoints  Int      @default(0)
+  isoPoints   Int      @default(0)
+  loggedAt    DateTime @default(now())
+  isPublic    Boolean  @default(true)
+
+  logger User @relation(fields: [loggedBy], references: [id])
+}
+
+model FrameworkState {
+  id         String   @id @default(cuid())
+  framework  String   @unique
+  metCount   Int      @default(0)
+  totalCount Int
+  updatedAt  DateTime @updatedAt
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  userId    String
+  action    String
+  entity    String
+  entityId  String?
+  detail    String?
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+}
