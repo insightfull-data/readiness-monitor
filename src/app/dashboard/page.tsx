@@ -130,19 +130,19 @@ export default async function DashboardPage() {
                 <div className="flex-1 border-l pl-8" style={{ borderColor: 'var(--earth-200)' }}>
                   <div className="space-y-4">
                     <div>
-                      <div className="label-upper mb-1.5" style={{ color: 'var(--sienna-600)' }}>Diagnosis</div>
+                      <div className="label-upper mb-1.5" style={{ color: 'var(--sienna-600)' }}>What the data shows</div>
                       <p className="text-sm leading-relaxed" style={{ color: 'var(--stone-700)' }}>
                         {report.diagnosis}
                       </p>
                     </div>
                     <div>
-                      <div className="label-upper mb-1.5" style={{ color: 'var(--earth-600)' }}>Guiding policy</div>
+                      <div className="label-upper mb-1.5" style={{ color: 'var(--earth-600)' }}>What this means for AI use</div>
                       <p className="text-sm leading-relaxed" style={{ color: 'var(--stone-700)' }}>
                         {report.guidingPolicy}
                       </p>
                     </div>
                     <div>
-                      <div className="label-upper mb-1.5" style={{ color: '#5a7a3a' }}>Coherent actions</div>
+                      <div className="label-upper mb-1.5" style={{ color: '#5a7a3a' }}>What needs to happen next</div>
                       <div className="text-sm leading-relaxed whitespace-pre-line" style={{ color: 'var(--stone-700)' }}>
                         {report.coherentActions}
                       </div>
