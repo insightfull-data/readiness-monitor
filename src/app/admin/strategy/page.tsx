@@ -60,7 +60,7 @@ export default async function StrategyPage() {
       <div className="space-y-3">
         <div className="stripe-diagnosis rounded-r-lg p-5">
           <div className="label-upper mb-2" style={{ color: 'var(--sienna-600)' }}>
-            Diagnosis — the core challenge
+            Core challenge — what we are solving
           </div>
           <p className="text-sm leading-relaxed" style={{ color: '#4a1a10' }}>
             Commercial transaction data is used monthly to generate AI insights that inform business decisions. The fundamental obstacle is that AI systems present outputs with uniform confidence regardless of input quality. Missing customer IDs, inconsistent business rules, and undocumented data lineage create systematic errors that are invisible in the AI output itself. Without a scored, monthly readiness gate, weak data produces confident-sounding but unreliable insights — and organisations act on them without knowing.
@@ -69,7 +69,7 @@ export default async function StrategyPage() {
 
         <div className="stripe-policy rounded-r-lg p-5">
           <div className="label-upper mb-2" style={{ color: 'var(--earth-700)' }}>
-            Guiding policy — the approach
+            Our approach — how we respond to it
           </div>
           <p className="text-sm leading-relaxed" style={{ color: 'var(--earth-900)' }}>
             Data readiness is treated as a scored monthly gate, not a one-time setup. AI outputs are only permitted at the level their underlying data quality supports — and that level is stated explicitly and publicly. Governance improvements are recorded as traceable actions, not assumed. Progress toward NIST AI RMF and ISO 42001 is tracked internally as evidence of closed gaps, not claimed as compliance. The strategy is internal; the evidence of it is public.
@@ -78,7 +78,7 @@ export default async function StrategyPage() {
 
         <div className="stripe-actions rounded-r-lg p-5">
           <div className="label-upper mb-2" style={{ color: '#4a6030' }}>
-            Coherent actions — what we are doing
+            Actions — what we are doing about it
           </div>
           <ol className="space-y-2">
             {[
