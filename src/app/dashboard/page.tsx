@@ -203,11 +203,18 @@ export default async function DashboardPage() {
                 </div>
               </div>
 
-              {/* Score trend */}
+              {/* Score trend — only shown with 2+ assessments */}
               <div className="card card-inner">
                 <div className="label-upper mb-4" style={{ fontSize: '10px' }}>Score trend</div>
-                {trend.length === 0 ? (
-                  <p className="text-sm" style={{ color: 'var(--stone-400)' }}>No historical data yet.</p>
+                {trend.length < 2 ? (
+                  <div className="py-4 text-center">
+                    <p className="text-sm mb-1" style={{ color: 'var(--stone-500)' }}>
+                      Trend appears after two assessments
+                    </p>
+                    <p className="text-xs" style={{ color: 'var(--stone-400)' }}>
+                      Run a second assessment next month to start tracking improvement over time.
+                    </p>
+                  </div>
                 ) : (
                   <>
                     <div className="flex items-end gap-1.5 h-20 mb-3">
