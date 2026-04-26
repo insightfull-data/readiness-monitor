@@ -12,10 +12,16 @@ export async function POST(req: NextRequest) {
     const {
       csvText, filename,
       ucName, ucBu, ucType, ucIntent,
-      period, sourceSystem, extractedAt, lineageStatus, reviewerName, rowCount,
+      sourceSystem, lineageStatus, reviewerName, rowCount,
     } = body
 
-    // Upsert use case
+    // Parse CSV stats — auto-detects dataset type and date range
+    const csvStats = csvText ? parseCSVStats(csvText) : getDemoCSVStats()
+
+    // Use detected period from CSV — fall back to 'Unknown' if no date column
+    const period = csvStats.detectedPeriod || 'Unknown period'
+
+    // Create use case
     const useCase = await prisma.useCase.create({
       data: {
         name: ucName || `Assessment — ${period}`,
@@ -26,42 +32,29 @@ export async function POST(req: NextRequest) {
       },
     })
 
-    // Create dataset
+    // Create dataset — no extractedAt, period comes from CSV
     const dataset = await prisma.dataset.create({
       data: {
         useCaseId: useCase.id,
         filename: filename || 'upload.csv',
-        period: period || 'Unknown',
+        period,
         sourceSystem: sourceSystem || 'Unknown',
-        rowCount: rowCount || null,
-        extractedAt: extractedAt ? new Date(extractedAt) : null,
+        rowCount: rowCount || csvStats.totalRows || null,
+        extractedAt: null,
         lineageStatus: lineageStatus || 'none',
         reviewerName: reviewerName || null,
       },
     })
 
-    // Parse CSV stats
-    const csvStats = csvText
-      ? parseCSVStats(csvText)
-      : getDemoCSVStats()
-
-    // Calculate days since extraction
-    if (extractedAt) {
-      const extracted = new Date(extractedAt)
-      csvStats.daysSinceExtraction = Math.floor(
-        (Date.now() - extracted.getTime()) / (1000 * 60 * 60 * 24)
-      )
-    }
-
     // Run checks
     const checks = runReadinessChecks({
       meta: {
-        period: period || 'Unknown',
+        period,
         sourceSystem: sourceSystem || 'Unknown',
-        extractedAt: extractedAt ? new Date(extractedAt) : null,
+        extractedAt: null,
         lineageStatus: (lineageStatus || 'none') as 'full' | 'partial' | 'none',
         reviewerName: reviewerName || null,
-        rowCount: rowCount || null,
+        rowCount: rowCount || csvStats.totalRows || null,
       },
       csv: csvStats,
     })
@@ -69,11 +62,11 @@ export async function POST(req: NextRequest) {
     const overallScore = calculateScore(checks)
     const band = getBand(overallScore)
 
-    // Generate Rumelt strategy
+    // Generate strategy narrative
     const strategy = generateRumeltStrategy(
       overallScore,
       checks,
-      period || 'this period',
+      period,
       sourceSystem || 'the source system'
     )
 
@@ -115,6 +108,9 @@ export async function POST(req: NextRequest) {
       runId: run.id,
       score: overallScore,
       band,
+      period,
+      datasetType: csvStats.datasetType,
+      detectedPeriod: csvStats.detectedPeriod,
       checks,
       diagnosis: strategy.diagnosis,
       guidingPolicy: strategy.guidingPolicy,
