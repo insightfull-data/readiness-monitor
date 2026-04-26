@@ -88,7 +88,7 @@ export default function LoginPage() {
 
           <div className="mt-5 pt-4 border-t text-center" style={{ borderColor: 'var(--earth-100)' }}>
             <p className="text-xs" style={{ color: 'var(--stone-400)' }}>
-              Demo credentials: admin@readiness.local / demo1234
+              Contact your administrator (Don Williams) for access credentials.
             </p>
           </div>
         </div>
