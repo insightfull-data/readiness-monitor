@@ -162,6 +162,13 @@
   }
 }
 
+/* Mobile adjustments */
+@media (max-width: 640px) {
+  .card { border-radius: 10px; }
+  .card-inner { padding: 16px; }
+  .topbar { padding: 0 16px; }
+}
+
 /* Scrollbar */
 ::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: var(--sand-100); }
